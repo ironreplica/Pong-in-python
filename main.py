@@ -16,7 +16,7 @@ BLACK = (0,0,0)
 PADDLE_WIDTH, PADDLE_HEIGHT = 20, 100
 BALL_RADIUS = 6
 
-WINNING_SCORE = 10
+WINNING_SCORE = 3
 
 SCORE_FONT = pygame.font.SysFont('comicsans', 50)
 
@@ -132,8 +132,7 @@ def main():
     
     left_score = 0
     right_score = 0
-    
-    
+    win = False
     
     while running:
         clock.tick(60) # FPS
@@ -148,34 +147,38 @@ def main():
         ball.move()
         handle_collision(ball,left_paddle,right_paddle)
         
+        def reset_game():
+            left_paddle.reset()
+            right_paddle.reset()
+            ball.reset()
+
         if ball.x < 0:
             right_score += 1
-            ball.reset()
+            reset_game()
+
         elif ball.x > WIDTH:
             left_score += 1
-            ball.reset()
+            reset_game()
+
         if left_score >= WINNING_SCORE:
             win_text = 'Left Player Won!'
             text = SCORE_FONT.render(win_text, 1, WHITE)
             WINDOW.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
             pygame.display.update()
             pygame.time.delay(5000)
-            left_paddle.reset()
-            right_paddle.reset()
-            ball.reset()
-            left_score = 0
-            right_score = 0
+            win = True
         elif right_score >= WINNING_SCORE:
             win_text = 'Right Player Won!'
             text = SCORE_FONT.render(win_text, 1, WHITE)
             WINDOW.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
             pygame.display.update()
             pygame.time.delay(5000)
-            left_paddle.reset()
-            right_paddle.reset()
-            ball.reset()
+            win = True
+        if win:
+            reset_game()
             left_score = 0
             right_score = 0
+            win = False
     pygame.quit()
     
 if __name__ == '__main__':
